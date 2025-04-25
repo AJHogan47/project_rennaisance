@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>YOU SHOULDN'T BE HERE</title>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: 'VT323', monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    .logo {
+      max-width: 150px;
+      margin-bottom: 20px;
+      border: none;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    input[type="password"] {
+      padding: 10px;
+      font-size: 20px;
+      border: 2px solid white;
+      background: #222;
+      color: white;
+      font-family: 'VT323', monospace;
+      margin-bottom: 10px;
+    }
+
+    #content {
+      margin-top: 20px;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    video, img, iframe {
+      max-width: 100%;
+      max-height: 60vh;
+      margin-top: 20px;
+      border: 2px solid white;
+    }
+
+    #error {
+      color: red;
+      margin-top: 15px;
+    }
+
+    .typewriter {
+      text-align: left;
+      font-size: 28px;
+      white-space: pre-wrap;
+      font-family: 'VT323', monospace;
+      width: 100%;
+      max-width: 800px;
+      margin-top: 20px;
+      padding-left: 10px;
+      min-height: 150px;
+      display: block;
+      margin-left: 0;
+    }
+
+    #loading {
+      font-size: 26px;
+      margin-top: 20px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    #loading.show {
+      opacity: 1;
+    }
+
+    /* Initially hide the audio controls */
+    #novAudio {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Logo at the top -->
+  <img src="SBFD_LOGO_CROPPED.jpg" alt="Logo" class="logo">
+
+  <h1>INPUT PASSKEY</h1>
+  <input type="password" id="passwordInput" placeholder="...">
+  
+  <div id="loading">LOADING...</div>
+  <div id="content"></div>
+  <div id="error"></div>
+
+  <!-- Typing sound -->
+  <audio id="typeSound" src="type-sound.mp3" preload="auto"></audio>
+  <!-- New audio for Nov19_2154.mp3, hidden by default -->
+  <audio id="novAudio" src="Nov19_2154.mp3" controls preload="auto"></audio>
+
+  <script>
+    document.getElementById("passwordInput").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") checkPassword();
+    });
+
+    const contentMap = {
+      'foxx': '<iframe width="800" height="450" src="https://www.youtube.com/embed/q7NGPPfHChc?controls=0&modestbranding=1&rel=0" frameborder="0" allowfullscreen></iframe>',
+      'reeds': '<iframe width="800" height="450" src="https://www.youtube.com/embed/pqdHoF-LJzY?controls=0&modestbranding=1&rel=0" frameborder="0" allowfullscreen></iframe>',
+      'poi': `<div id="poiText" class="typewriter" data-text="> POI [PERSONS OF INTEREST]\n\n> ADAM BINES\n> SAMUEL BINES\n> DR. RAYMOND FOXX\n> DR. MAYA REEDS\n> DR. WILLIAM FORD"></div>`,
+      '0012': `<div id="file012" class="typewriter" data-text="> 012 - VISAGE\n  > PATIENT NAME - MICHAEL DIXON\n    OBJECT OF INTEREST - COMPUTER NETWORK [RENAISSANCE]\n    NOTES:\n    MICHAEL WAS TERMINATED FROM HIS BODY BY METHOD OF ELECTROCUTION.\n    AFTER AN HOUR OF NO RESPONSE, A CLIENT WAS CONNECTED TO THE\n    RENAISSANCE NETWORK.\n    A MESSAGE WAS TRANSMITTED AND A FILE WAS ATTACHED.\n    MESSAGE AND FILE STORED AT FILES > MISC > 0012 > NOV19_2154.MP3"></div>`,
+      'bloodlust': `<div id="bloodlustText" class="typewriter" data-text="I still live in the city. I can't leave now.\nI can't bear to go back to the slums after what happened.\n\nMy old life is gone. My sister is gone...oh God, what would Nat think?\nI can't just topple the S.B.F.D., if Adam stepped down, there's someone who'd fill his shoes.\n\nNot to mention a hundred people behind that person...\nMost of the people working there don't know shit about what's going on between the higher ups.\nIf I can't take the whole thing down, the least I can do is satiate my newfound blood lust.\n\nRevenge is my only hope at coping with this whole ordeal.\nI think taking their lives is more than justified."></div>`,
+      'info': `<div id="infoText" class="typewriter" data-text="The Southern Binds’ Federal Division is a secret branch of the government in Clent. They operate out of the ■■■■■■■, a tall tower in the middle of Clent.\n\nThe S.B.F.D. is a federal body in charge of advancing technology that could help improve the lives of people, primarily, extending ■■■■ ■■■■■■■■■■.\n\nThe S.B.F.D. has been known to give opportunities to those living in the slums, allowing the poor to grab a bit of money for being a ■■■■ ■■■■■■■.\n\nVery few know about the experiments that are happening within the walls of the S.B.F.D., and the people of Clent only hear about the company's successes."></div>`,
+      'screams': `<div id="screamsText" class="typewriter" data-text="> MESSAGE: I CAN SEE, I HAVE NO EYES\n           I CAN HEAR, IT'S TOO LOUD\n           I CAN THINK, I HAVE NO BRAIN\n\n           WHAT THE FUCK DID YOU DO TO ME?\n \n "></div>`
+    };
+
+    function checkPassword() {
+      const password = document.getElementById('passwordInput').value.toLowerCase();
+      const contentDiv = document.getElementById('content');
+      const errorDiv = document.getElementById('error');
+      const loadingDiv = document.getElementById('loading');
+
+      contentDiv.innerHTML = '';
+      errorDiv.textContent = '';
+      loadingDiv.classList.remove('show'); // Hide loading by default
+
+      if (!contentMap[password]) {
+        errorDiv.textContent = 'INVALID PASSKEY.';
+        return;
+      }
+
+      // Show loading only for valid passwords
+      loadingDiv.classList.add('show');
+
+      setTimeout(() => {
+        loadingDiv.classList.remove('show');
+        contentDiv.innerHTML = contentMap[password];
+
+        if (password === 'poi') {
+          setTimeout(() => animateTypewriter(null, 'poiText'), 100);
+        } else if (password === '0012') {
+          setTimeout(() => animateTypewriter(null, 'file012'), 100);
+        } else if (password === 'bloodlust') {
+          setTimeout(() => animateTypewriter(null, 'bloodlustText'), 100);
+        } else if (password === 'info') {
+          setTimeout(() => animateTypewriter(null, 'infoText'), 100);
+        } else if (password === 'screams') {
+          setTimeout(() => animateTypewriter(null, 'screamsText'), 100);
+          // Show audio controls only when "screams" is entered
+          const audio = document.getElementById("novAudio");
+          audio.style.display = 'block'; // Display the audio controls
+          audio.play(); // Play the audio
+        }
+      }, 1200);
+    }
+
+    function animateTypewriter(_, elementId, speed = 40) {
+      const el = document.getElementById(elementId);
+      const baseSound = document.getElementById("typeSound");
+      if (!el || !baseSound) return;
+
+      const fullText = el.getAttribute("data-text");
+      let index = 0;
+      el.textContent = "";
+
+      function type() {
+        if (index < fullText.length) {
+          el.textContent += fullText.charAt(index);
+
+          const soundClone = baseSound.cloneNode();
+          soundClone.play();
+
+          index++;
+          setTimeout(type, speed);
+        }
+      }
+
+      type();
+    }
+  </script>
+</body>
+</html>
